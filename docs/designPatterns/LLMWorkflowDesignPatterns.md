@@ -5,14 +5,15 @@ its just a chaining of LLMS that finally gives an output. There can be a code bl
 Prompt chaining is simply a sequential pipeline of multiple LLM calls.
 A code block can exist between steps, but the flow is strictly linear.
 
-input -> llm1 -> llm2 -> code block -> llm3 -> output
+input -> llm1 -> llm2 -> (code block) -> llm3 -> output
 
 2) ROUTING
 for a given input , there is a LLM router that routes the action or input to various other specialized llms. The LLM router has the autonomy of selecting which LLM should perform the tasks . SO only a single LLM is selected for its specialized subtasks.
-
+```
                     -> SPECIALIZED LLM 1
 input -> LLMROUTER  -> SPECIALIZED LLM 2 -> output
                     -> SPECIALIZED LLM 3
+```
 
 3) PARALLELIZATION
 This will have a code block that sperates the tasks into multiple sections and feeds it to multiple LLMS that work parallely. These LLMS then give their outputs to another code block that stitches all the LLM outputs into  single result and spits it out - This is concurrently running the LLMS 
