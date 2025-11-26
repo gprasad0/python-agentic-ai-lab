@@ -175,10 +175,10 @@ Required because gather() expects multiple arguments, not a single list.
 JS equivalent:
 await Promise.all([...tasks])
 
+```
+
 Python equivalent logic:
+
+```
 await asyncio.gather(task1, task2, task3, task4)
-```
-
-```
-
 ```
