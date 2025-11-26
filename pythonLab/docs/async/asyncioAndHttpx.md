@@ -77,16 +77,17 @@ That’s the real power.
 Use this:
 
 ✅ Normal scripts / APIs / automation
+```
 with httpx.Client() as client:
 for url in urls:
-...
-
+```
 🚀 Scraping / bulk requests / 50+ calls
+```
 async with httpx.AsyncClient()...
 await asyncio.gather(...)
+```
 
 **async is only better when you use concurrency. Otherwise, it’s just more complicated.**
-````
 
 EXAMPLE CODE :
 
@@ -170,3 +171,4 @@ await Promise.all([...tasks])
 Python equivalent logic:
 await asyncio.gather(task1, task2, task3, task4)
 ```
+````
