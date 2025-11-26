@@ -60,16 +60,20 @@ for (const url of urls) {
 ```
 
 **When async becomes powerful (the real difference)**
+
 The async version only becomes faster when you do parallel execution:
 
-````
+```
 tasks = [client.get(url) for url in urls]
 results = await asyncio.gather(*tasks)
 ```
+
 Now it becomes equal to:
+
 ```
 await Promise.all(urls.map(url => fetch(url)))
 ```
+
 That’s the real power.
 
 **When should YOU use which?**
@@ -77,11 +81,14 @@ That’s the real power.
 Use this:
 
 ✅ Normal scripts / APIs / automation
+
 ```
 with httpx.Client() as client:
 for url in urls:
 ```
+
 🚀 Scraping / bulk requests / 50+ calls
+
 ```
 async with httpx.AsyncClient()...
 await asyncio.gather(...)
@@ -171,4 +178,7 @@ await Promise.all([...tasks])
 Python equivalent logic:
 await asyncio.gather(task1, task2, task3, task4)
 ```
-````
+
+```
+
+```
