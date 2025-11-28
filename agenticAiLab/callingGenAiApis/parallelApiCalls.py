@@ -5,6 +5,8 @@ import asyncio
 import httpx
 import time
 
+# PROMPT CHAINS CAN BE USED TO CHAIN MULTIPLE PROMPTS TOGETHER TO GET A MORE REFINED OUTPUT
+# BELOW IS A PROMPT CHAINING WORFLOW
 load_dotenv(override=True)
 geminiApiKey = os.getenv("GOOGLE_GEMINI_API_KEY")
 client = AsyncOpenAI(
@@ -27,8 +29,20 @@ async def handlegenAI():
     tasks = [call_gemini_api(option) for option in options]
     results = await asyncio.gather(*tasks)  # * is an unpacking operator
     # for more info about httpx and asyncio read the docs in pythonLab/docs/async/asyncHttpx.md
-    for result in results:
-        print(result)
+    businesResults = []
+    for i, result in enumerate(results):
+        businesResults.append({options[i]: result})
+    messages = [
+        {
+            "role": "user",
+            "content": f"tell me the best idea out of all these . I have given an array of objects that contains multiple ideas. Go through it and let me know the best one{businesResults}",
+        }
+    ]
+    response = await client.chat.completions.create(
+        model="gemini-2.5-flash", messages=messages
+    )
+    print("Final Idea from all the options:", response.choices[0].message.content)
+    return response.choices[0].message.content
 
 
 if __name__ == "__main__":

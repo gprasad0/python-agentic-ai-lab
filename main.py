@@ -1,4 +1,4 @@
-from agenticAiLab.callingGenAiApis.main import handlegenAI
+from agenticAiLab.callingGenAiApis.parallelApiCalls import handlegenAI
 import asyncio
 
 if __name__ == "__main__":
