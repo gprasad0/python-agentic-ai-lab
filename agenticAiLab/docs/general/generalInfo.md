@@ -5,7 +5,7 @@ Purpose:
 Sets the rules, personality, constraints, and style for the assistant.
 This is internal instruction to the AI.  
 Think:  
-System prompt = Operating System
+System prompt = Operating System  
 Ex :
 
 ```
@@ -15,7 +15,7 @@ Ex :
   }
 ```
 
-User Prompt — "WHAT the user wants right now"
+User Prompt — "WHAT the user wants right now"  
 Purpose:
 It contains:
 The actual question
@@ -74,3 +74,29 @@ age: int
     print(User.age + 1)  // 2 Works
 
 ```
+
+3. **what is a decorator**
+
+```
+from pydantic import field_validator
+
+class Address(BaseModel):
+    pincode: int
+
+    @field_validator("pincode")
+    def check_pincode(cls, v):
+        if len(str(v)) != 6:
+            raise ValueError("pincode must be 6 digits")
+        return v
+```
+
+@field_validator("pincode") - This is a decorator.  
+@ is Python’s syntax for a decorator.  
+A decorator means:
+
+"Before or after this function runs, modify its behavior."  
+Attach this function to the pincode validation pipeline.
+
+4. **what is ** in python**  
+   The symbol \* is used for unpacking or spreading lists or tuple
+   the symbol ** is used for unpacking or spreading dict[dictionary]
