@@ -1,4 +1,5 @@
-**Difference bw system and user prompts**
+1. **Difference bw system and user prompts**
+
 System Prompt — "WHO the AI is and HOW it should behave"
 Purpose:
 Sets the rules, personality, constraints, and style for the assistant.
@@ -30,7 +31,8 @@ This is your runtime input.
 
 ```
 
-**what is pydantic**
+2. **what is pydantic**
+
 Its a library that validates an object for the correct types
 Pydantic lets you trust your data before your code touches it.
 
