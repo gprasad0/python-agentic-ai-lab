@@ -59,16 +59,16 @@ Ex:
 user = {age:"1"}
 age = user.age + 1  // crash
 
-USING PYDANTIC:
+
 ```
 
-    from pydantic import BaseModel
-    class User(BaseModel):
-        age: int
+```
+USING PYDANTIC:
+from pydantic import BaseModel
+class User(BaseModel):
+age: int
 
     user = User({age: "1"})
     print(User.age + 1)  // 2 Works
-
-```
 
 ```
