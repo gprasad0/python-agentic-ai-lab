@@ -4,6 +4,7 @@ import os
 import asyncio
 import httpx
 import time
+import gradio as gr
 
 # PROMPT CHAINS CAN BE USED TO CHAIN MULTIPLE PROMPTS TOGETHER TO GET A MORE REFINED OUTPUT
 # BELOW IS A PROMPT CHAINING WORFLOW
