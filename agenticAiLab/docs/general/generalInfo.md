@@ -31,6 +31,6 @@ This is your runtime input.
 
 ```
 
-2. #**load_dotenv(override=True)**  
+2. # **load_dotenv(override=True)**
    The command load_dotenv(override=True) is used in Python with the python-dotenv library to load environment variables from a .env file and, importantly, force them to replace any existing environment variables in your system's current session.  
    By default, when you use load_dotenv() without the override parameter (which defaults to False), existing system environment variables take precedence over those defined in your .env file

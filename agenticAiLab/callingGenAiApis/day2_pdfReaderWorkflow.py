@@ -10,11 +10,11 @@ from pypdf import PdfReader
 # If evaluate is true, print passed evaluation
 # else print failed evaluation and run a rerun method
 
+load_dotenv(override=True)
+
 
 def readPdf():
-    reader = PdfReader(
-        "C:/Users/gurup/OneDrive/Desktop/agents/1_foundations/me/linkedin.pdf"
-    )
+    reader = PdfReader(f"{os.getenv('LINKEDIN_PDF')}/linkedin.pdf")
     pdfText = ""
     for page in reader.pages:
         pdfText += page.extract_text() + "\n"
@@ -23,9 +23,7 @@ def readPdf():
 
 
 def readTextFile():
-    with open(
-        "C:/Users/gurup/OneDrive/Desktop/agents/1_foundations/me/summary.txt", "r"
-    ) as file:
+    with open(f"{os.getenv('SUMMARY_TEXT')}/summary.txt", "r") as file:
         fileContent = file.read()
     print("File Content:", fileContent)
     return fileContent
