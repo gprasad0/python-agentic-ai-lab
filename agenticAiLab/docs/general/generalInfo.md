@@ -1,4 +1,4 @@
-1. #Difference bw system and user prompts
+1. # **Difference bw system and user prompts**
 
 System Prompt — "WHO the AI is and HOW it should behave"  
 Purpose:  
