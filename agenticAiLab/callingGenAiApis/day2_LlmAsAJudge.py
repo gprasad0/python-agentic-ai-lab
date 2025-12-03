@@ -4,6 +4,7 @@ import asyncio
 import gradio as gr
 from openai import AsyncOpenAI
 from pypdf import PdfReader
+from pydantic import BaseModel
 
 load_dotenv(override=True)
 geminiApiKey = os.getenv("GOOGLE_GEMINI_API_KEY")
@@ -12,6 +13,11 @@ client = AsyncOpenAI(
     base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
 )
 name = "Ed Donner"
+
+
+class Evaluation(BaseModel):
+    is_acceptable: bool
+    feedback: str
 
 
 def linkedin():
@@ -41,8 +47,36 @@ system_prompt += (
 system_prompt += f"With this context, please chat with the user, always staying in character as {name}."
 
 
-def evaluate():
-    return None
+evaluator_system_prompt = f"You are an evaluator that decides whether a response to a question is acceptable. \
+You are provided with a conversation between a User and an Agent. Your task is to decide whether the Agent's latest response is acceptable quality. \
+The Agent is playing the role of {name} and is representing {name} on their website. \
+The Agent has been instructed to be professional and engaging, as if talking to a potential client or future employer who came across the website. \
+The Agent has been provided with context on {name} in the form of their summary and LinkedIn details. Here's the information:"
+
+evaluator_system_prompt += (
+    f"\n\n## Summary:\n{summary()}\n\n## LinkedIn Profile:\n{linkedin()}\n\n"
+)
+evaluator_system_prompt += f"With this context, please evaluate the latest response, replying with whether the response is acceptable and your feedback."
+
+
+def evaluate(message, history, agent_response) -> Evaluation:
+    user_prompt = (
+        f"Here's the conversation between the User and the Agent: \n\n{history}\n\n"
+    )
+    user_prompt += f"Here's the latest message from the User: \n\n{message}\n\n"
+    user_prompt += (
+        f"Here's the latest response from the Agent: \n\n{agent_response}\n\n"
+    )
+    user_prompt += "Please evaluate the response, replying with whether it is acceptable and your feedback."
+    messages = [
+        {"role": "system", "content": evaluator_system_prompt},
+    ]
+    response = client.chat.completions.create(
+        model="gemini-2.5-flash",
+        messages=messages,
+        response_format=Evaluation,  # synchronous call
+    )
+    return response.choices[0].message.parsed
 
 
 def rerun():
@@ -50,6 +84,7 @@ def rerun():
 
 
 async def chat(message, history):
+    print(f"histroy===>{history}", flush=True)
     messages = (
         [
             {
@@ -62,11 +97,13 @@ async def chat(message, history):
             {"role": "user", "content": message},
         ]
     )
+
     response = await client.chat.completions.create(
         model="gemini-2.5-flash", messages=messages
     )
-    print(f"response===>{response}", flush=True)
-    return response.choices[0].message.content
+    evaluatedContent = evaluate(message, history, response.choices[0].message.content)
+    print(f"Evaluation Result: {evaluatedContent}", flush=True)
+    return evaluatedContent
 
 
 # if __name__ == "__main__":

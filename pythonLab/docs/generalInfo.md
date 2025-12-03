@@ -1,4 +1,4 @@
-1. #**what is pydantic**
+1. # **what is pydantic**
 
 Its a library that validates an object for the correct types  
 Pydantic lets you trust your data before your code touches it.
@@ -42,7 +42,7 @@ age: int
 
 ```
 
-2. #**what is a decorator**
+2. # **what is a decorator**
 
 ```
 from pydantic import field_validator
@@ -64,15 +64,17 @@ A decorator means:
 "Before or after this function runs, modify its behavior."  
 Attach this function to the pincode validation pipeline.
 
-3. #**what is ** in python**  
-   The symbol \* is used for unpacking or spreading lists or tuple  
-   the symbol ** is used for unpacking or spreading dict[dictionary]
+3. # **what is ** in python\*\*
 
-4. #**Difference in importing files**  
+   The symbol \* is used for unpacking or spreading lists or tuple  
+   the symbol \*\* is used for unpacking or spreading dict[dictionary]
+
+4. # **Difference in importing files**
+
    import gradio as gr -> This imports the entire module/package and gives it an alias  
    from pypdf import PdfReader -> This imports only one class from the package.
 
-5. #**Correct naming rules for Python files (modules)**  
+5. # **Correct naming rules for Python files (modules)**
    Python file names must:
    - start with letter or underscore
    - contain only letters, numbers, underscores

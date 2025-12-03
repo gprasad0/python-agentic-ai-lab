@@ -42,7 +42,6 @@ async def handlegenAI():
     response = await client.chat.completions.create(
         model="gemini-2.5-flash", messages=messages
     )
-    print("Final Idea from all the options:", response.choices[0].message.content)
     return response.choices[0].message.content
 
 
