@@ -79,7 +79,7 @@ async def evaluate(message, history, agent_response) -> Evaluation:
         response_format=Evaluation,  # synchronous call
     )
     print(f"Evaluator Respons: {response}", flush=True)
-    return response
+    return response.choices[0].message.parsed
 
 
 def rerun():
@@ -108,7 +108,10 @@ async def chat(message, history):
         message, history, response.choices[0].message.content
     )
     print(f"Evaluation Result: {evaluatedContent}", flush=True)
-    return evaluatedContent
+    if evaluatedContent.is_acceptable:
+        return response.choices[0].message.content
+    else:
+        return f"Response by LLM was not correct: {evaluatedContent.feedback}"
 
 
 # if __name__ == "__main__":
