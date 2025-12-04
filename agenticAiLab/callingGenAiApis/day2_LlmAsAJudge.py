@@ -59,7 +59,7 @@ evaluator_system_prompt += (
 evaluator_system_prompt += f"With this context, please evaluate the latest response, replying with whether the response is acceptable and your feedback."
 
 
-def evaluate(message, history, agent_response) -> Evaluation:
+async def evaluate(message, history, agent_response) -> Evaluation:
     user_prompt = (
         f"Here's the conversation between the User and the Agent: \n\n{history}\n\n"
     )
@@ -70,13 +70,16 @@ def evaluate(message, history, agent_response) -> Evaluation:
     user_prompt += "Please evaluate the response, replying with whether it is acceptable and your feedback."
     messages = [
         {"role": "system", "content": evaluator_system_prompt},
+        {"role": "user", "content": user_prompt},
     ]
-    response = client.chat.completions.create(
+    print(f"Evaluator Messages: {messages}", flush=True)
+    response = await client.chat.completions.parse(
         model="gemini-2.5-flash",
         messages=messages,
         response_format=Evaluation,  # synchronous call
     )
-    return response.choices[0].message.parsed
+    print(f"Evaluator Respons: {response}", flush=True)
+    return response
 
 
 def rerun():
@@ -101,7 +104,9 @@ async def chat(message, history):
     response = await client.chat.completions.create(
         model="gemini-2.5-flash", messages=messages
     )
-    evaluatedContent = evaluate(message, history, response.choices[0].message.content)
+    evaluatedContent = await evaluate(
+        message, history, response.choices[0].message.content
+    )
     print(f"Evaluation Result: {evaluatedContent}", flush=True)
     return evaluatedContent
 
