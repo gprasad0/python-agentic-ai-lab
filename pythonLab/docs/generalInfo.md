@@ -1,4 +1,4 @@
-1. # **what is pydantic**
+# **what is pydantic**
 
 Its a library that validates an object for the correct types  
 Pydantic lets you trust your data before your code touches it.
@@ -42,7 +42,7 @@ age: int
 
 ```
 
-2. # **what is a decorator**
+# **what is a decorator**
 
 ```
 from pydantic import field_validator
@@ -64,18 +64,52 @@ A decorator means:
 "Before or after this function runs, modify its behavior."  
 Attach this function to the pincode validation pipeline.
 
-3. # **what is ** in python\*\*
+# **what is ** in python\*\*
 
-   The symbol \* is used for unpacking or spreading lists or tuple  
-   the symbol \*\* is used for unpacking or spreading dict[dictionary]
+The symbol \* is used for unpacking or spreading lists or tuple  
+ the symbol \*\* is used for unpacking or spreading dict[dictionary]
 
-4. # **Difference in importing files**
+# **Difference in importing files**
 
-   import gradio as gr -> This imports the entire module/package and gives it an alias  
-   from pypdf import PdfReader -> This imports only one class from the package.
+import gradio as gr -> This imports the entire module/package and gives it an alias  
+ from pypdf import PdfReader -> This imports only one class from the package.
 
-5. # **Correct naming rules for Python files (modules)**
-   Python file names must:
-   - start with letter or underscore
-   - contain only letters, numbers, underscores
-   - cannot contain - or spaces
+# **Correct naming rules for Python files (modules)**
+
+Python file names must:
+
+- start with letter or underscore
+- contain only letters, numbers, underscores
+- cannot contain - or spaces
+
+# ** Optimize code - caching methods without running it on every import **
+
+    ```
+        def one():
+            ...
+
+        def two():
+            ...
+
+        summary = f("using methods {one()} and {two()}")
+    ```
+
+    Instead of doing the above, we can cache the methods
+    ```
+        one = one()
+        two = two()
+        summary = f("using methods {one} and {two}")
+    ```
+
+    This ensures:
+
+    ✅ runs only once
+    ✅ result reused
+    ✅ safe import behavior
+    ✅ predictable performance
+
+# ** What does load_dotenv do ? **
+
+    Reads your .env file
+    ✅ Loads variables into the environment
+    ✅ Makes them available via os.getenv()
