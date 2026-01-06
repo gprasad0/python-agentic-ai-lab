@@ -37,10 +37,9 @@ class Me:
             base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
         )
 
-    def callGradle(self):
+    def callGradle(self, message, history):
         print("rsponse111")
-
-        messages = [{"role": "user", "content": "Hello, how are you?"}]
+        messages = [{"role": "user", "content": message}]
         response = self.client.chat.completions.create(
             model="gemini-2.5-flash", messages=messages
         )

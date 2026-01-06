@@ -2,10 +2,8 @@
 import gradio as gr
 from agenticAiLab.callingGenAiApis.day3_LlmAsAJudgeWithTools import Me
 
-if __name__ == "__main__":
-    me = Me()
-
+me = Me()
 # push("This is a test push notification from the main.py file.")
 gr.ChatInterface(
-    fn=me.callGradle(),
+    fn=me.callGradle,
 ).launch()
