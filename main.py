@@ -1,6 +1,6 @@
 # from agenticAiLab.callingGenAiApis.day2_LlmAsAJudgeWithoutTools import chat
 import gradio as gr
-from agenticAiLab.callingGenAiApis.day3_LlmAsAJudgeWithTools import readPdf
+from agenticAiLab.callingGenAiApis.day3_LlmAsAJudgeWithTools import aboutUser
 
 # from agenticAiLab.callingGenAiApis.day3_LlmAsAJudgeWithTools import Me
 
@@ -11,5 +11,5 @@ from agenticAiLab.callingGenAiApis.day3_LlmAsAJudgeWithTools import readPdf
 # ).launch()
 
 if __name__ == "__main__":
-    text = readPdf()
+    text = aboutUser()
     print(text)
