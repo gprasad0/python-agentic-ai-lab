@@ -113,3 +113,61 @@ Python file names must:
     Reads your .env file
     ✅ Loads variables into the environment
     ✅ Makes them available via os.getenv()
+
+# **HTTPX VS requests**
+
+    requests -> fetch() in JS
+    HTTPX -> Promise.all() in JS
+    Both are http clients .
+
+    Both:
+    Make HTTP calls
+    Talk to APIs
+    Send/receive JSON
+    Handle headers, auth, timeouts
+
+    # Difference = execution model
+    requests (blocking, synchronous)
+    ```
+    response = requests.get(url)
+    # Python waits here until done
+    ```
+
+    __Strengths__
+
+    ✅ Dead simple
+    ✅ Extremely stable
+    ✅ Perfect for long-running tasks
+    ✅ Ideal inside Celery workers
+    ✅ Easier debugging
+
+    __Weaknesses__
+    ❌ Blocks the thread
+    ❌ Slower when doing many calls in parallel
+
+    httpx (async-first, modern)
+    ```
+    async with httpx.AsyncClient() as client:
+    response = await client.get(url)
+    ```
+
+    Python:
+    Starts request
+    Does other work
+    Comes back when response is ready
+
+    __Strengths__
+    ✅ High concurrency
+    ✅ Fast for many tool calls
+    ✅ Async + sync support
+    ✅ HTTP/2, connection pooling
+    __Weaknesses__
+    ❌ More complex
+    ❌ Requires async discipline
+    ❌ Harder stack traces
+
+    1) requests can be used for celery tasks that can be bocked as it runs parallely.Needs more time and this is where the agents think. Blocking is fine
+    Reliability > speed
+    2) HTTPX can be used multiple api calls
+    Streaming responses
+    Concurrent planners
