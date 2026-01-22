@@ -30,7 +30,7 @@ def aboutUser():
 
 def pushNotification(message: str):
     response = requests.post(
-        "https://ntfy.sh/acerLaptop8212",
+        "https://ntfy.sh/acer123",
         data=message,
         headers={"Title": "Task Success"},
     )
