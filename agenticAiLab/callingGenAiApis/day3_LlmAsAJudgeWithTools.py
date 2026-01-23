@@ -114,3 +114,14 @@ class Agent:
         system_prompt += f"\n\n## Summary:\n{self.summaryText}\n\n## LinkedIn Profile:\n{self.pdfText}\n\n"
         system_prompt += f"With this context, please chat with the user, always staying in character as {self.name}."
         return system_prompt
+
+    def handleToolCalls(self, tool_calls):
+        return 1
+
+    def callGradio(self, user_input, chat_history):
+        reply = user_input
+        print(f"User input: {user_input} chat history: {chat_history}", flush=True)
+        if reply == "hi":
+            return "hello"
+        else:
+            return "please say hi"

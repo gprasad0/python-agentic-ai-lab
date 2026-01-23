@@ -1,9 +1,6 @@
 # from agenticAiLab.callingGenAiApis.day2_LlmAsAJudgeWithoutTools import chat
 import gradio as gr
-from agenticAiLab.callingGenAiApis.day3_LlmAsAJudgeWithTools import (
-    aboutUser,
-    pushNotification,
-)
+from agenticAiLab.callingGenAiApis.day3_LlmAsAJudgeWithTools import Agent
 
 # from agenticAiLab.callingGenAiApis.day3_LlmAsAJudgeWithTools import Me
 
@@ -14,6 +11,12 @@ from agenticAiLab.callingGenAiApis.day3_LlmAsAJudgeWithTools import (
 # ).launch()
 
 if __name__ == "__main__":
-    text = pushNotification(
-        "This is a test push notification from the main.py file111."
-    )
+    chat_agent = Agent()
+    gr.ChatInterface(
+        fn=chat_agent.callGradio,
+        title="Simple Chatbot",
+        description="Minimal Gradio chatbot prototype",
+    ).launch()
+    # text = pushNotification(
+    #     "This is a test push notification from the main.py file111."
+    # )
