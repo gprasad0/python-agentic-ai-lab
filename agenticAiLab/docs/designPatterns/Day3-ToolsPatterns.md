@@ -24,7 +24,8 @@ This schema acts as a **contract** between the LLM and your application code.
       "description": "User's full name"
     }
   },
-  "required": ["email"]
+  "required": ["email"],
+  "additionalProperties": false
 }
 ```
 
@@ -62,6 +63,11 @@ In this example:
 Any field not listed in `properties` is considered invalid.
 
 ---
+
+## What does `additionalProperties` do?
+
+`additionalProperties` - Do NOT allow any fields other than the ones explicitly defined in properties.
+The LLM will not give any other fields other than the ones that is given in the schema
 
 ## Why JSON Schema Is Critical in Agentic AI
 
