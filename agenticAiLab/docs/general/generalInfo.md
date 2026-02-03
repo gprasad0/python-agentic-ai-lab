@@ -58,3 +58,32 @@ They’re only used to make the expression span multiple lines cleanly. SO basic
 Ex : [1,3] + [4,5] + [6,9] => [1,3,4,5,6,9] -> so it allows multiple lines . One long expression
 
 # \*\* \*\*
+
+### `*chat_history` (List Unpacking)
+
+```python
+*chat_history
+```
+
+This uses Python’s **list unpacking** feature.
+
+If `chat_history` is:
+
+```python
+[
+    {"role": "user", "content": "Hi"},
+    {"role": "assistant", "content": "Hello"}
+]
+```
+
+Then `*chat_history` expands to:
+
+```python
+{"role": "user", "content": "Hi"},
+{"role": "assistant", "content": "Hello"}
+```
+
+This inserts all previous messages directly into the `messages` list while
+preserving their original order.
+
+---

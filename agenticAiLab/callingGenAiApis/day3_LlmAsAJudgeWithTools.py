@@ -6,7 +6,7 @@ from pypdf import PdfReader
 from openai import OpenAI
 
 load_dotenv(override=True)
-PUSHOVER_URL = "https://api.pushover.net/1/messages.json"
+geminiApiKey = os.getenv("GOOGLE_GEMINI_API_KEY")
 
 
 def readPdf():
@@ -35,7 +35,6 @@ def pushNotification(message: str):
         data=message,
         headers={"Title": "Task Success"},
     )
-    print(f"Pushover response: {response.text}")
 
 
 def record_user_details(email: str, name: str, notes: str):
@@ -96,7 +95,10 @@ toolSchema = [
 
 class Agent:
     def __init__(self):
-        self.openAiClient = OpenAI()
+        self.openAiClient = OpenAI(
+            api_key=geminiApiKey,
+            base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+        )
         self.pdfText = readPdf()
         self.summaryText = readText()
         self.name = "Ed Donner"
@@ -120,8 +122,14 @@ class Agent:
 
     def callGradio(self, user_input, chat_history):
         reply = user_input
-        print(f"User input: {user_input} chat history: {chat_history}", flush=True)
-        if reply == "hi":
-            return "hello"
-        else:
-            return "please say hi"
+        messages = [
+            {"role": "system", "content": self.systemPrompt()},
+            *chat_history,
+            {"role": "user", "content": reply},
+        ]
+
+        response = self.openAiClient.chat.completions.create(
+            model="gemini-2.5-flash", messages=messages
+        )
+        print(f"Response: {response}", flush=True)
+        return response.choices[0].message.content
