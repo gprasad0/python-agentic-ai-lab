@@ -1,9 +1,11 @@
 from dotenv import load_dotenv
 import os
+from numpy import rint
 import requests
 import gradio as gr
 from pypdf import PdfReader
 from openai import OpenAI
+from pprint import pprint
 
 load_dotenv(override=True)
 geminiApiKey = os.getenv("GOOGLE_GEMINI_API_KEY")
@@ -67,7 +69,7 @@ record_user_details_json = {
             },
         },
         "required": ["email"],
-        "additionalProperties": False,
+        "additionalProperties": False,  # Whether extra (unspecified) fields are allowed in the input.
     },
 }
 
@@ -87,9 +89,9 @@ record_unknown_questions_json = {
     },
 }
 
-toolSchema = [
-    record_user_details_json,
-    record_unknown_questions_json,
+tools = [
+    {"type": "function", "function": record_user_details_json},
+    {"type": "function", "function": record_unknown_questions_json},
 ]
 
 
@@ -109,8 +111,7 @@ class Agent:
             Your responsibility is to represent {self.name} for interactions on the website as faithfully as possible. \
             You are given a summary of {self.name}'s background and LinkedIn profile which you can use to answer questions. \
             Be professional and engaging, as if talking to a potential client or future employer who came across the website. \
-            If you don't know the answer to a question, you must use the 'record_unknown_questions' tool to record the question. \
-            If you don't know the answer to any question, use your record_unknown_question tool to record the question that you couldn't answer, even if it's about something trivial or unrelated to career. \
+            If you don't know the answer to any question, use your record_unknown_questions tool to record the question that you couldn't answer, even if it's about something trivial or unrelated to career. \
             If the user is engaging in discussion, try to steer them towards getting in touch via email; ask for their email and record it using your record_user_details tool. "
 
         system_prompt += f"\n\n## Summary:\n{self.summaryText}\n\n## LinkedIn Profile:\n{self.pdfText}\n\n"
@@ -129,7 +130,10 @@ class Agent:
         ]
 
         response = self.openAiClient.chat.completions.create(
-            model="gemini-2.5-flash", messages=messages
+            model="gemini-2.5-flash", messages=messages, tools=tools
         )
-        print(f"Response: {response}", flush=True)
-        return response.choices[0].message.content
+        pprint(f"Response: {response}")
+        if response.choices[0].finish_reason == "tool_calls":
+            print("Tool calls requested by the model:", flush=True)
+        return "what"
+        # return response.choices[0].message.content
