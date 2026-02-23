@@ -41,8 +41,8 @@ def pushNotification(message: str):
     )
 
 
-def record_user_details(email: str, name: str, notes: str):
-    pushNotification(notes)
+def record_user_details(email: str, name="Name not provided", notes="not provided"):
+    pushNotification(email)
     return {"recorded": f"Recorded user details"}
 
 
@@ -97,7 +97,7 @@ tools = [
 ]
 
 
-def get_tool_map():
+def get_tool_map(**args):
     return {
         "record_user_details": record_user_details,
         "record_unknown_questions": record_unknown_questions,
@@ -137,7 +137,7 @@ class Agent:
                 {
                     "role": "tool",
                     "content": json.dumps(recorded_data),
-                    "tool_call_id": tool_calls.id,
+                    "tool_call_id": tool.id,
                 }
             )
 
@@ -160,6 +160,7 @@ class Agent:
                 toolcalls = response.choices[0].message.tool_calls
                 invoketoolCalls = self.handleToolCalls(toolcalls)
                 messages.append(response.choices[0].message)
+                messages.extend(invoketoolCalls)
 
             else:
                 done = True
@@ -167,43 +168,43 @@ class Agent:
         return response.choices[0].message.content
 
 
-{
-    "id": "A-WLae7RKNnx4-EP1dvR-QU",
-    "object": "chat.completion",
-    "created": 1770775812,
-    "model": "gemini-2.5-flash",
-    "choices": [
-        {
-            "index": 0,
-            "finish_reason": "tool_calls",
-            "logprobs": null,
-            "message": {
-                "role": "assistant",
-                "content": null,
-                "refusal": null,
-                "annotations": null,
-                "audio": null,
-                "function_call": null,
-                "tool_calls": [
-                    {
-                        "id": "function-call-9127675616511081436",
-                        "type": "function",
-                        "function": {
-                            "name": "record_unknown_questions",
-                            "arguments": {"questions": "ew"},
-                        },
-                    }
-                ],
-            },
-        }
-    ],
-    "service_tier": null,
-    "system_fingerprint": null,
-    "usage": {
-        "completion_tokens": 17,
-        "prompt_tokens": 814,
-        "total_tokens": 927,
-        "completion_tokens_details": null,
-        "prompt_tokens_details": null,
-    },
-}
+# {
+#     "id": "A-WLae7RKNnx4-EP1dvR-QU",
+#     "object": "chat.completion",
+#     "created": 1770775812,
+#     "model": "gemini-2.5-flash",
+#     "choices": [
+#         {
+#             "index": 0,
+#             "finish_reason": "tool_calls",
+#             "logprobs": null,
+#             "message": {
+#                 "role": "assistant",
+#                 "content": null,
+#                 "refusal": null,
+#                 "annotations": null,
+#                 "audio": null,
+#                 "function_call": null,
+#                 "tool_calls": [
+#                     {
+#                         "id": "function-call-9127675616511081436",
+#                         "type": "function",
+#                         "function": {
+#                             "name": "record_unknown_questions",
+#                             "arguments": {"questions": "ew"},
+#                         },
+#                     }
+#                 ],
+#             },
+#         }
+#     ],
+#     "service_tier": null,
+#     "system_fingerprint": null,
+#     "usage": {
+#         "completion_tokens": 17,
+#         "prompt_tokens": 814,
+#         "total_tokens": 927,
+#         "completion_tokens_details": null,
+#         "prompt_tokens_details": null,
+#     },
+# }
