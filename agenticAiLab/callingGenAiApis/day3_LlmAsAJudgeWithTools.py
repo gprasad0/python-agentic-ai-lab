@@ -7,6 +7,7 @@ import gradio as gr
 from pypdf import PdfReader
 from openai import OpenAI
 from pprint import pprint
+import json
 
 load_dotenv(override=True)
 geminiApiKey = os.getenv("GOOGLE_GEMINI_API_KEY")
@@ -42,16 +43,12 @@ def pushNotification(message: str):
 
 def record_user_details(email: str, name: str, notes: str):
     pushNotification(notes)
-    return {
-        "recorded": f"Recorded user details"
-    }
+    return {"recorded": f"Recorded user details"}
 
 
 def record_unknown_questions(questions: str):
     pushNotification(questions)
-    return {
-        "recorded": f"Recorded unknown question"
-    }
+    return {"recorded": f"Recorded unknown question"}
 
 
 record_user_details_json = {
@@ -99,10 +96,11 @@ tools = [
     {"type": "function", "function": record_unknown_questions_json},
 ]
 
+
 def get_tool_map():
-    return{
+    return {
         "record_user_details": record_user_details,
-        "record_unknown_questions": record_unknown_questions
+        "record_unknown_questions": record_unknown_questions,
     }
 
 
@@ -129,59 +127,19 @@ class Agent:
         system_prompt += f"With this context, please chat with the user, always staying in character as {self.name}."
         return system_prompt
 
-
-{
-  "id": "A-WLae7RKNnx4-EP1dvR-QU",
-  "object": "chat.completion",
-  "created": 1770775812,
-  "model": "gemini-2.5-flash",
-  "choices": [
-    {
-      "index": 0,
-      "finish_reason": "tool_calls",
-      "logprobs": null,
-      "message": {
-        "role": "assistant",
-        "content": null,
-        "refusal": null,
-        "annotations": null,
-        "audio": null,
-        "function_call": null,
-        "tool_calls": [
-          {
-            "id": "function-call-9127675616511081436",
-            "type": "function",
-            "function": {
-              "name": "record_unknown_questions",
-              "arguments": {
-                "questions": "ew"
-              }
-            }
-          }
-        ]
-      }
-    }
-  ],
-  "service_tier": null,
-  "system_fingerprint": null,
-  "usage": {
-    "completion_tokens": 17,
-    "prompt_tokens": 814,
-    "total_tokens": 927,
-    "completion_tokens_details": null,
-    "prompt_tokens_details": null
-  }
-}
-
-
-
     def handleToolCalls(self, tool_calls):
         records = []
         for tool in tool_calls:
             toolName = tool.function.name
-            toolargumets = tool.function.arguments
+            toolargumets = json.loads(tool.function.arguments)
             recorded_data = get_tool_map()[toolName](**toolargumets)
-            records.append(recorded_data)
+            records.append(
+                {
+                    "role": "tool",
+                    "content": json.dumps(recorded_data),
+                    "tool_call_id": tool_calls.id,
+                }
+            )
 
         return records
 
@@ -192,15 +150,60 @@ class Agent:
             *chat_history,
             {"role": "user", "content": reply},
         ]
+        done = False
 
-        # response = self.openAiClient.chat.completions.create(
-        #     model="gemini-2.5-flash", messages=messages, tools=tools
-        # )
-        pprint(f"Response: {response}")
-        # response = "tool_calls"
-        if response.choices[0].finish_reason == "tool_calls":
-            toolcalls = response.choices[0].message.tool_calls
-            invoketoolCalls = self.handleToolCalls(toolcalls)
+        while not done:
+            response = self.openAiClient.chat.completions.create(
+                model="gemini-2.5-flash", messages=messages, tools=tools
+            )
+            if response.choices[0].finish_reason == "tool_calls":
+                toolcalls = response.choices[0].message.tool_calls
+                invoketoolCalls = self.handleToolCalls(toolcalls)
+                messages.append(response.choices[0].message)
+
+            else:
+                done = True
 
         return response.choices[0].message.content
-        # return response.choices[0].message.content
+
+
+{
+    "id": "A-WLae7RKNnx4-EP1dvR-QU",
+    "object": "chat.completion",
+    "created": 1770775812,
+    "model": "gemini-2.5-flash",
+    "choices": [
+        {
+            "index": 0,
+            "finish_reason": "tool_calls",
+            "logprobs": null,
+            "message": {
+                "role": "assistant",
+                "content": null,
+                "refusal": null,
+                "annotations": null,
+                "audio": null,
+                "function_call": null,
+                "tool_calls": [
+                    {
+                        "id": "function-call-9127675616511081436",
+                        "type": "function",
+                        "function": {
+                            "name": "record_unknown_questions",
+                            "arguments": {"questions": "ew"},
+                        },
+                    }
+                ],
+            },
+        }
+    ],
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+        "completion_tokens": 17,
+        "prompt_tokens": 814,
+        "total_tokens": 927,
+        "completion_tokens_details": null,
+        "prompt_tokens_details": null,
+    },
+}
