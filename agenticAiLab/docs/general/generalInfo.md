@@ -87,3 +87,7 @@ This inserts all previous messages directly into the `messages` list while
 preserving their original order.
 
 ---
+
+### ** what is an agent**
+
+    An agent is an LLM that uses tools in a loop to acheive a specific goal
