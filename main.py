@@ -1,6 +1,6 @@
 # from agenticAiLab.callingGenAiApis.day2_LlmAsAJudgeWithoutTools import chat
 import gradio as gr
-from agenticAiLab.callingGenAiApis.day3_LlmAsAJudgeWithTools import Agent
+from agenticAiLab.callingGenAiApisAndToolCalling.toolCalling import Agent
 
 # from agenticAiLab.callingGenAiApis.day3_LlmAsAJudgeWithTools import Me
 
