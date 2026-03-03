@@ -91,3 +91,16 @@ preserving their original order.
 ### ** what is an agent**
 
     An agent is an LLM that uses tools in a loop to acheive a specific goal
+
+### ** what is inference**
+
+    Inference = When a trained model is used to make a prediction.
+    When you run:
+    result = Runner.run_sync(agent, "Tell my fortune")
+    That call is inference.
+    Meaning:
+    The model is already trained
+    You send input
+    It predicts next tokens
+    It returns output
+    That prediction step = inference.

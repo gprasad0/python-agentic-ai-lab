@@ -171,3 +171,243 @@ Python file names must:
     2) HTTPX can be used multiple api calls
     Streaming responses
     Concurrent planners
+
+# Python Decorators – Complete Guide
+
+## 📌 What is a Decorator?
+
+A **decorator** is:
+
+> A function that modifies another function’s behavior without changing its code. Basically, an Higher order component in JS
+
+Decorators allow you to wrap additional functionality around an existing function in a clean and reusable way.
+
+---
+
+## 🎁 Simple Analogy
+
+Think of a function as a gift box.
+
+A decorator is gift wrapping:
+
+- The box (function) stays the same.
+- You add something outside it.
+
+---
+
+## 🔹 Basic Function (No Decorator)
+
+```python
+def greet():
+    print("Hello")
+```
+
+Now suppose you want to log whenever it runs:
+
+```python
+def greet():
+    print("Function started")
+    print("Hello")
+    print("Function ended")
+```
+
+If you need this behavior for 20 functions, repeating this is bad practice.
+
+Decorators solve this problem.
+
+---
+
+## 🔹 Basic Decorator Example
+
+```python
+def my_decorator(func):
+    def wrapper():
+        print("Function started")
+        func()
+        print("Function ended")
+    return wrapper
+```
+
+Apply it:
+
+```python
+@my_decorator
+def greet():
+    print("Hello")
+
+greet()
+```
+
+### Output:
+
+```
+Function started
+Hello
+Function ended
+```
+
+---
+
+## 🔹 What `@decorator` Actually Means
+
+This:
+
+```python
+@my_decorator
+def greet():
+```
+
+Is the same as:
+
+```python
+greet = my_decorator(greet)
+```
+
+The decorator wraps the original function and returns a modified version.
+
+---
+
+## 🔹 Production-Ready Decorator Pattern
+
+Always support arguments using `*args` and `**kwargs`.
+
+```python
+def log_execution(func):
+    def wrapper(*args, **kwargs):
+        print(f"Running {func.__name__}")
+        result = func(*args, **kwargs)
+        print("Done")
+        return result
+    return wrapper
+```
+
+Usage:
+
+```python
+@log_execution
+def calculate(x, y):
+    return x + y
+
+calculate(5, 3)
+```
+
+---
+
+## 🔹 Real-World Production Use Cases
+
+Decorators are used for:
+
+- Logging
+- Authentication
+- Caching
+- Rate limiting
+- Error handling
+- Timing functions
+- API route registration (FastAPI, Flask)
+
+---
+
+## 🔹 Example: Timing Decorator (Useful for AI Inference)
+
+```python
+import time
+
+def time_execution(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        print(f"Execution time: {end - start:.2f}s")
+        return result
+    return wrapper
+```
+
+Apply it to an AI call:
+
+```python
+@time_execution
+def run_agent(prompt):
+    return Runner.run_sync(agent, prompt)
+```
+
+---
+
+## 🔹 Built-in Decorators in Python
+
+You already use these:
+
+- `@staticmethod`
+- `@classmethod`
+- `@property`
+
+Example:
+
+```python
+class Person:
+    @property
+    def name(self):
+        return "Guru"
+```
+
+---
+
+## 🔹 Why Decorators Matter in AI Applications
+
+In production AI systems, decorators help you:
+
+- Log agent calls
+- Track inference time
+- Add retry logic for API failures
+- Add authentication to endpoints
+- Monitor usage
+
+Instead of modifying core logic, you wrap behavior cleanly.
+
+---
+
+## 🔹 Mental Model
+
+Without decorator:
+
+```
+Function → Runs
+```
+
+With decorator:
+
+```
+Decorator → Function → Return
+```
+
+The decorator wraps and enhances the function.
+
+---
+
+## 🔹 Technical Definition
+
+A decorator is:
+
+> A higher-order function that takes a function and returns a new function.
+
+---
+
+## 🔹 Key Takeaways
+
+| Concept        | Meaning                                       |
+| -------------- | --------------------------------------------- |
+| Decorator      | Function that wraps another function          |
+| Syntax         | `@decorator_name`                             |
+| Purpose        | Modify behavior without editing original code |
+| Production Use | Logging, auth, caching, monitoring            |
+
+---
+
+## 🚀 Summary
+
+Decorators allow you to:
+
+- Keep your core logic clean
+- Add reusable enhancements
+- Write production-ready, scalable Python code
+
+They are fundamental in modern Python frameworks and AI backend systems.
