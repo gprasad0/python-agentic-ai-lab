@@ -32,9 +32,14 @@ async def callMultipleAgents(input):
     finalJokes = [result.final_output for result in jokeAgentResults]
     payload = json.dumps({"jokes": finalJokes})
     evaluatorAgent = Runner.run_streamed(agent3, payload)
-    async for evaluation in evaluatorAgent.stream_events():
-        pprint(f"evaluation==> {vars(evaluation)}")
+
+    final_text = ""
+    async for event in evaluatorAgent.stream_events():
+        if event.type == "response.output_text.delta":
+            print(event.delta, end="", flush=True)
+            final_text += event.delta
+
+        return final_text
 
 
 bestJoke = asyncio.run(callMultipleAgents("Tell me a joke for today"))
-# print(f"bestJoke==> {bestJoke.final_output}")
