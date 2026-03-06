@@ -104,3 +104,230 @@ preserving their original order.
     It predicts next tokens
     It returns output
     That prediction step = inference.
+
+# Python `append()` vs `extend()`
+
+In Python, both **`append()`** and **`extend()`** are list methods used to add elements to a list.
+However, they behave differently when adding multiple elements.
+
+Understanding the difference is important when working with lists and avoiding unintended nested lists.
+
+---
+
+# append()
+
+## Definition
+
+`append()` adds **a single element** to the end of a list.
+
+If the element itself is a list, the **entire list is added as a single item**, creating a nested list.
+
+## Syntax
+
+```python
+list.append(element)
+```
+
+## Example
+
+```python
+numbers = [1, 2, 3]
+
+numbers.append(4)
+
+print(numbers)
+```
+
+Output:
+
+```
+[1, 2, 3, 4]
+```
+
+---
+
+## Appending a List
+
+```python
+numbers = [1, 2, 3]
+
+numbers.append([4, 5])
+
+print(numbers)
+```
+
+Output:
+
+```
+[1, 2, 3, [4, 5]]
+```
+
+Notice that `[4, 5]` becomes a **nested list inside the main list**.
+
+---
+
+# extend()
+
+## Definition
+
+`extend()` adds **each element from another iterable** to the list.
+
+Instead of adding the iterable as one item, it **iterates through it and appends each element individually**.
+
+## Syntax
+
+```python
+list.extend(iterable)
+```
+
+## Example
+
+```python
+numbers = [1, 2, 3]
+
+numbers.extend([4, 5])
+
+print(numbers)
+```
+
+Output:
+
+```
+[1, 2, 3, 4, 5]
+```
+
+The elements `4` and `5` are **added individually**.
+
+---
+
+# Visual Difference
+
+### append()
+
+```
+[1, 2, 3] + [4, 5]
+        ↓
+[1, 2, 3, [4, 5]]
+```
+
+### extend()
+
+```
+[1, 2, 3] + [4, 5]
+        ↓
+[1, 2, 3, 4, 5]
+```
+
+---
+
+# Side-by-Side Example
+
+```python
+a = [1, 2, 3]
+
+a.append([4, 5])
+print(a)
+```
+
+Output
+
+```
+[1, 2, 3, [4, 5]]
+```
+
+---
+
+```python
+a = [1, 2, 3]
+
+a.extend([4, 5])
+print(a)
+```
+
+Output
+
+```
+[1, 2, 3, 4, 5]
+```
+
+---
+
+# Comparison Table
+
+| Feature             | append()             | extend()          |
+| ------------------- | -------------------- | ----------------- |
+| Adds                | One element          | Multiple elements |
+| Accepts             | Any object           | Iterable          |
+| Nested list created | Yes (if list passed) | No                |
+| Typical use case    | Add a single item    | Merge lists       |
+
+---
+
+# Rule of Thumb
+
+Use:
+
+```
+append() → when adding one item
+extend() → when merging lists
+```
+
+---
+
+# Example Use Case
+
+### Using append
+
+```python
+tools = []
+
+tools.append("weather_tool")
+tools.append("email_tool")
+```
+
+Result
+
+```
+["weather_tool", "email_tool"]
+```
+
+---
+
+### Using extend
+
+```python
+tools = ["weather_tool"]
+
+tools.extend(["email_tool", "notification_tool"])
+```
+
+Result
+
+```
+["weather_tool", "email_tool", "notification_tool"]
+```
+
+---
+
+# Alternative (Pythonic Way)
+
+Sometimes you can simply combine lists:
+
+```python
+tools = ["weather_tool"] + ["email_tool", "notification_tool"]
+```
+
+Result
+
+```
+["weather_tool", "email_tool", "notification_tool"]
+```
+
+---
+
+# Summary
+
+- `append()` adds **one element to the list**
+- `extend()` adds **elements from another iterable**
+
+Choosing the correct method prevents **unexpected nested lists and improves code clarity**.
