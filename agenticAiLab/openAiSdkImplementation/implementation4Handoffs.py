@@ -57,7 +57,21 @@ async def sendNotification(notificationContent: str):
 
 
 async def handoffMethod(input: str):
-    runner = await Runner.run(
-        routingAgent,
-        "Route this input - " + input,
+    handOffAgentInstructions = "You are an agent that will determine which specialized tool can be best used to handle the incoming request. Once the tool gives the data back, you need to handoff this data to the sendNotification tool to send a notification to the laptop"
+    handOffAgent = Agent(
+        name="handOffAgent",
+        instructions=handOffAgentInstructions,
+        tools=[*speicializedTools(), sendNotification],
+        model=geminiLlmModel,
     )
+    agentInput = f"Incoming request is {input}. You will have to determine which tool can be used for the incoming  request and handit off to sendNotification request with the reponse from the tool"
+    result = await Runner.run(
+        handOffAgent,
+        input=agentInput,
+    )
+    return result
+
+
+runHandOff = asyncio.run(
+    handoffMethod("I want to go to Paris next month and I need help with the planning")
+)
