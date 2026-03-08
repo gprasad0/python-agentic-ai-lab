@@ -64,10 +64,9 @@ async def handoffMethod(input: str):
         tools=[*speicializedTools(), sendNotification],
         model=geminiLlmModel,
     )
-    agentInput = f"Incoming request is {input}. You will have to determine which tool can be used for the incoming  request and handit off to sendNotification request with the reponse from the tool"
     result = await Runner.run(
         handOffAgent,
-        input=agentInput,
+        input=input,
     )
     return result
 
