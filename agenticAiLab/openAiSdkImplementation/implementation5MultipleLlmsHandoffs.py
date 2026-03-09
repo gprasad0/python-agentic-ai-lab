@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
-
-from agents import Agent, Runner, Trace, function_tool
+from openai import AsyncOpenAI
+from agents import Agent, Runner, Trace, function_tool, OpenAIChatCompletionsModel
 import os
 import httpx
 import json
@@ -9,8 +9,7 @@ import asyncio
 
 load_dotenv(override=True)
 geminiApiKey = os.getenv("GOOGLE_GEMINI_API_KEY")
-os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_GEMINI_API_KEY")
-geminiLlmModel = os.getenv("gemini_llm_model")
+geminiLlmModel = os.getenv("GEMINI_BASE_URL")
 
 
 @function_tool
@@ -42,4 +41,6 @@ async def callOpenRouterAPi(input: str):
         return response["choices"][0]["message"]["content"]
 
 
-asyncio.run(callOpenRouterAPi("What is the capital of France?"))
+def callGeminiModel(input: str):
+    gemini_client = AsyncOpenAI(base_url=geminiLlmModel, api_key=geminiApiKey)
+    gemini_model = OpenAIChatCompletionsModel(gemini_client, model=geminiLlmModel)
