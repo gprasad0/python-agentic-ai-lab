@@ -91,6 +91,7 @@ Handoffs allow an agent to **transfer the conversation to another agent**.
 The new agent then **takes control of the conversation**.
 
 This is useful when you have **specialized agents**.
+THis does nto work with tools. It only works with Agents
 
 ## Example Agents
 

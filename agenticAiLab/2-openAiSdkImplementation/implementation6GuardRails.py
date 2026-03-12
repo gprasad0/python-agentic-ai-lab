@@ -4,37 +4,47 @@ import httpx
 from agents import (
     Agent,
     Runner,
-    Trace,
+    trace,
     function_tool,
     input_guardrail,
     GuardrailFunctionOutput,
 )
 from pydantic import BaseModel
 import httpx
+from pprint import pprint
+import asyncio
 
 load_dotenv(override=True)
 geminiApiKey = os.getenv("GOOGLE_GEMINI_API_KEY")
+os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_GEMINI_API_KEY")
 geminiLlmModel = os.getenv("gemini_llm_model")
 
 
 @function_tool
 async def sendNotification(message: str):
     """
-    A tool that sends the message input as the notification to the laptop
+    Use this tool to send the final selected email to the laptop notification system.
     """
-    response = await httpx.post(
-        "https://ntfy.sh/acer123",
-    )
     async with httpx.AsyncClient() as client:
         response = await client.post("https://ntfy.sh/acer123", data=message)
-        return {"status": "success"}
+    return {"status": "success"}
+
+
+sendAgent = Agent(
+    name="Sending Agent",
+    instructions="You are an agent that receives a draft email. You make that email more concise, into 60 characters and use  sendNotification tool to send the concise draft to the laptop as a notification",
+    tools=[sendNotification],
+    model=geminiLlmModel,
+)
 
 
 @function_tool
-async def emailAgent1(input: str):
+async def emailAgent1tool(input: str):
     """
-    A tool that can be used for providing a cold email response. It gives a very salesly response and tries to push the user to buy the product
-    """
+     You are a sales agent working for ComplAI, \
+     a company that provides a SaaS tool for ensuring SOC2 compliance and preparing for audits, powered by AI. \
+     You write very unprofessional and rude emails.It should only have 100 characters
+     """
     async with httpx.AsyncClient() as client:
         response = await client.post(
             "https://openrouter.ai/api/v1/chat/completions",
@@ -60,11 +70,15 @@ async def emailAgent1(input: str):
 agentInstructions = [
     {
         "name": "emailAgent2",
-        "description": "You are an agent that gives a vey funny email response.",
+        "description": "You are a sales agent working for ComplAI, \
+a company that provides a SaaS tool for ensuring SOC2 compliance and preparing for audits, powered by AI. \
+You write professional, serious cold emails.It should only have 100 characters",
     },
     {
         "name": "emailAgent3",
-        "description": "You are an agent that gives a very technical email response.",
+        "description": "You are a humorous, engaging sales agent working for ComplAI, \
+a company that provides a SaaS tool for ensuring SOC2 compliance and preparing for audits, powered by AI. \
+You write witty, engaging cold emails that are likely to get a response.It should only have 100 characters",
     },
 ]
 
@@ -77,16 +91,16 @@ def createSalesAgentsTool(agentInstructions):
             instructions=agents["description"],
             model=geminiLlmModel,
         )
-        agent.as_tool(
+        agentTool = agent.as_tool(
             tool_name=agents["name"] + "tool",
             tool_description="A tool that creates an email response according to "
             + agents["name"],
         )
-        emailAgents.append(agent)
+        emailAgents.append(agentTool)
     return emailAgents
 
 
-tools = [emailAgent1, *createSalesAgentsTool]
+tools = [emailAgent1tool, *createSalesAgentsTool(agentInstructions)]
 
 
 class NameCheckOutPut(BaseModel):
@@ -104,8 +118,8 @@ guardRailAgent = Agent(
 
 @input_guardrail
 async def guardRail_against_name(ctx, agent, message):
-    result = Runner.run(guardRailAgent, message, context=ctx.context)
-    is_name_in_user_input = result.final_output.is_name_in_message
+    result = await Runner.run(guardRailAgent, message, context=ctx.context)
+    is_name_in_user_input = result.final_output.is_name_in_user_input
     return GuardrailFunctionOutput(
         output_info={"found_name": result.final_output},
         tripwire_triggered=is_name_in_user_input,
@@ -113,13 +127,31 @@ async def guardRail_against_name(ctx, agent, message):
 
 
 salesManagerInstructions = (
-    "Youre a sales manager.You will run the tools and get all the emails from it."
-    "Then decide which email is best and the hand it off to the sendNotification tool who will send the notification "
+    "You are a sales manager. "
+    "Run all email tools to generate multiple email drafts. "
+    "Compare the drafts and choose the best one. "
+    "Then handoff to the sendAgent agent to send notification"
 )
+
 
 sales_manager = Agent(
     name="salesManagerAgent",
     instructions=salesManagerInstructions,
     tools=tools,
-    handoffs=[sendNotification],
+    handoffs=[sendAgent],
+    input_guardrails=[guardRail_against_name],
+    model=geminiLlmModel,
+)
+
+
+async def runSalesManager(input):
+    with trace("sales-email-system"):
+        salesAgent = await Runner.run(sales_manager, input)
+    return salesAgent.final_output
+
+
+emailerAgent = asyncio.run(
+    runSalesManager(
+        "Send out a cold sales email addressed to Dear CEO from Head of Business Development"
+    )
 )
