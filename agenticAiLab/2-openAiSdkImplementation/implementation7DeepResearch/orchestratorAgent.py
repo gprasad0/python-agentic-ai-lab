@@ -2,10 +2,10 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 
 
-class orchestratorAgent:
+class OrchestratorAgent:
 
     def run(self, query: str):
-        return "orchestrator"
+        yield "Planning searches..."
 
     def sendNotification(self):
         return "send notification"
