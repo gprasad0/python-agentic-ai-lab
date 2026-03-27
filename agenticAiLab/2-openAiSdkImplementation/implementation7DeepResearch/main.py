@@ -6,11 +6,11 @@ load_dotenv(override=True)
 
 
 async def run(query: str):
-    async for chunk in ResearchManager().run(query):
+    async for chunk in OrchestratorAgent().run(query):
         yield chunk
 
 
-with gr.Blocks(theme=gr.themes.Default(primary_hue="sky")) as ui:
+with gr.Blocks() as ui:
     gr.Markdown("# Deep Research")
     query_textbox = gr.Textbox(label="What topic would you like to research?")
     run_button = gr.Button("Run", variant="primary")
