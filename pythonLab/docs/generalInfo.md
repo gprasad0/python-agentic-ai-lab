@@ -411,3 +411,106 @@ Decorators allow you to:
 - Write production-ready, scalable Python code
 
 They are fundamental in modern Python frameworks and AI backend systems.
+
+# 🐍 Python Annotations & `Annotated` --- Complete Guide
+
+## 1. What are Annotations?
+
+Annotations allow attaching type information to variables, function
+parameters, and return values.
+
+They improve: - Code readability - IDE support - Static type checking
+
+**Important:** Python does NOT enforce types at runtime.
+
+---
+
+## 2. Types of Annotations
+
+### Function
+
+def greet(name: str) -\> str
+
+### Variable
+
+age: int = 25
+
+### Class
+
+class User: name: str age: int
+
+---
+
+## 3. Advanced Typing
+
+- List\[int\]
+- Dict\[str, int\]
+- Tuple\[int, int\]
+- Optional\[str\]
+- Union\[int, str\]
+- int \| str (Python 3.10+)
+- Callable
+- Any
+
+---
+
+## 4. Runtime Behavior
+
+Annotations are stored in: **annotations**
+
+Can be accessed via: get_type_hints()
+
+---
+
+## 5. What is Annotated?
+
+Annotated (PEP 593) allows adding metadata to types.
+
+Syntax: Annotated\[type, metadata\]
+
+---
+
+## 6. Examples
+
+- Annotated\[int, "must be \>= 18"\]
+- Annotated\[str, "max length 10"\]
+
+Supports multiple metadata values.
+
+---
+
+## 7. Behavior
+
+- Still treated as base type
+- Metadata ignored unless used
+
+---
+
+## 8. Real-world Usage
+
+- FastAPI (validation)
+- Pydantic v2
+- Custom validation systems
+
+---
+
+## 9. Difference
+
+Annotations → Type only\
+Annotated → Type + metadata
+
+---
+
+## 10. Best Practices
+
+Use annotations for: - Readability - Type checking
+
+Use Annotated for: - Validation - Framework integrations
+
+---
+
+## ✅ Summary
+
+- Annotations define types
+- Annotated adds metadata
+- Neither enforces behavior by default
