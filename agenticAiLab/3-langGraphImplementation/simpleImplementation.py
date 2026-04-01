@@ -61,3 +61,6 @@ graph_builder.add_edge("first_node", END)
 
 # compile graph
 graph = graph_builder.compile()
+
+def chat(user_input:str,history):
+    
