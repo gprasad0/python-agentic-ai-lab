@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from pydantic import BaseModel
 import gradio as gr
 import random
+from pprint import pprint
 
 load_dotenv(override=True)
 
@@ -47,7 +48,7 @@ graph_builder = StateGraph(State)
 # create a node
 def first_node(old_state: State) -> State:
     reply = f"{random.choice(nouns)} are {random.choice(adjectives)}"
-    messages = [{"role": "assistnat"}, {"content": reply}]
+    messages = [{"role": "assistant", "content": reply}]
     newState = State(messages=messages)
     return newState
 
@@ -62,5 +63,17 @@ graph_builder.add_edge("first_node", END)
 # compile graph
 graph = graph_builder.compile()
 
-def chat(user_input:str,history):
-    
+
+def chat(user_input: str, history):
+    message = {"role": "user", "content": user_input}
+    messages = [message]
+    state = State(messages=messages)
+    result = graph.invoke(state)
+    pprint(result)
+    return result["messages"][-1].content
+
+
+gr.ChatInterface(
+    chat,
+    title="Simple Chatbot",
+).launch()
