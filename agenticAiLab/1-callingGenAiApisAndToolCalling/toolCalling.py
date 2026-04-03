@@ -35,10 +35,11 @@ def aboutUser():
 
 def pushNotification(message: str):
     response = requests.post(
-        "https://ntfy.sh/acer123",
+        os.getenv("NTFY_URL"),
         data=message,
         headers={"Title": "Task Success"},
     )
+    return {"status": response.status_code, "message": "Notification sent successfully"}
 
 
 def record_user_details(email: str, name="Name not provided", notes="not provided"):
@@ -112,7 +113,7 @@ class Agent:
         )
         self.pdfText = readPdf()
         self.summaryText = readText()
-        self.name = "Ed Donner"
+        self.name = "Your name"
 
     def systemPrompt(self):
         system_prompt = f"You are acting as {self.name}. You are answering questions on {self.name}'s website, \
