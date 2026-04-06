@@ -1,12 +1,9 @@
-from urllib import response
 from dotenv import load_dotenv
 import os
-from numpy import rint
 import requests
 import gradio as gr
 from pypdf import PdfReader
 from openai import OpenAI
-from pprint import pprint
 import json
 
 load_dotenv(override=True)
@@ -113,7 +110,7 @@ class Agent:
         )
         self.pdfText = readPdf()
         self.summaryText = readText()
-        self.name = "Your name"
+        self.name = os.getenv("PERSON_NAME")
 
     def systemPrompt(self):
         system_prompt = f"You are acting as {self.name}. You are answering questions on {self.name}'s website, \
@@ -133,6 +130,7 @@ class Agent:
         for tool in tool_calls:
             toolName = tool.function.name
             toolargumets = json.loads(tool.function.arguments)
+            print(f"Agent calling tool : {toolName}", flush=True)
             recorded_data = get_tool_map()[toolName](**toolargumets)
             records.append(
                 {
@@ -154,6 +152,7 @@ class Agent:
         done = False
 
         while not done:
+            print(f"Call the gemini LLM", flush=True)
             response = self.openAiClient.chat.completions.create(
                 model="gemini-2.5-flash", messages=messages, tools=tools
             )
@@ -167,3 +166,19 @@ class Agent:
                 done = True
 
         return response.choices[0].message.content
+
+
+agent = Agent()
+
+
+def chat(message, history):
+    return agent.callGradio(message, history)
+
+
+gr.ChatInterface(chat).launch()
+
+# gr.ChatInterface(
+#     fn=Agent.callGradio,
+#     title="Simple Chatbot",
+#     description="Minimal tooling Gradio chatbot prototype",
+# ).launch()
