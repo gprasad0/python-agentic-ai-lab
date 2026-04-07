@@ -24,9 +24,9 @@ graph_builder = StateGraph(State)
 
 
 # create node
-def first_node(messages: str) -> str:
+def first_node(state: State) -> State:
     # messages = [{"role": "assistant", "content": "hi"}]
-    response = gemini_llm.invoke(messages)
+    response = gemini_llm.invoke(state.messages)
     createNode = State(messages=[response])
     return createNode
 
