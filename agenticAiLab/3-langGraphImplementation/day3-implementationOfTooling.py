@@ -1,11 +1,11 @@
 from dotenv import load_dotenv
 from litellm import Annotated
 from pydantic import BaseModel
-from langchain_community.utilities import GoogleSearchAPIWrapper
+from langchain_community.utilities import GoogleSerperAPIWrapper
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.graph.message import add_messages
 from langgraph.graph import StateGraph, START, END
-from langchain.agents import Tool
+from langchain.tools import tool
 import os
 import requests
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -14,11 +14,11 @@ import gradio as gr
 
 load_dotenv(override=True)
 os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_GEMINI_API_KEY")
-
-serperSearchApi = GoogleSearchAPIWrapper()
+os.environ["SERPER_API_KEY"]
+serperSearchApi = GoogleSerperAPIWrapper()
 # serperSearchApi.run("What is the capital of France?")
 
-tool_search = Tool(
+tool_search = tool(
     name="search",
     func=serperSearchApi.run,
     description="use this tool to search the web for up-to-date information. The input to this tool should be a search query.",
@@ -36,7 +36,7 @@ def pushNotification(message: str):
     return {"status": response.status_code, "message": "Notification sent successfully"}
 
 
-send_notification_tool = Tool(
+send_notification_tool = tool(
     name="send_notification",
     func=pushNotification,
     description="use this tool to send a notification to the user. The input to this tool should be the message you want to send.",
