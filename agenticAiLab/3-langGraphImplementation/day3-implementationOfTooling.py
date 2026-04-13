@@ -14,18 +14,18 @@ import gradio as gr
 
 load_dotenv(override=True)
 os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_GEMINI_API_KEY")
-os.environ["SERPER_API_KEY"]
+os.getenv("SERPER_API_KEY")
 serperSearchApi = GoogleSerperAPIWrapper()
 # serperSearchApi.run("What is the capital of France?")
 
-tool_search = tool(
-    name="search",
-    func=serperSearchApi.run,
-    description="use this tool to search the web for up-to-date information. The input to this tool should be a search query.",
-)
-tool_search.invoke("What is the capital of France?")
+
+@tool
+def tool_search(query: str) -> str:
+    """Use Serper Search API to search the web for up-to-date information."""
+    return serperSearchApi.run(query)
 
 
+@tool
 def pushNotification(message: str):
     """Push a notification to the user using ntfy"""
     response = requests.post(
@@ -36,13 +36,7 @@ def pushNotification(message: str):
     return {"status": response.status_code, "message": "Notification sent successfully"}
 
 
-send_notification_tool = tool(
-    name="send_notification",
-    func=pushNotification,
-    description="use this tool to send a notification to the user. The input to this tool should be the message you want to send.",
-)
-
-tools = [tool_search, send_notification_tool]
+tools = [tool_search, pushNotification]
 
 
 # create state

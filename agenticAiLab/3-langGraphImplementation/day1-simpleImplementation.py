@@ -68,6 +68,7 @@ def chat(user_input: str, history):
     message = {"role": "user", "content": user_input}
     messages = [message]
     state = State(messages=messages)
+    # invoke the graph
     result = graph.invoke(state)
     pprint(result)
     return result["messages"][-1].content
