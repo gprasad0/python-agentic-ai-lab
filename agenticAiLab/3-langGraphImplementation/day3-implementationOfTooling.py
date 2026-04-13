@@ -52,7 +52,7 @@ graph_builder = StateGraph(State)
 
 # create Node
 def chatbot(state: State):
-    return {"messages": [llm_with_tools.invoke(state["messages"])]}
+    return {"messages": [llm_with_tools.invoke(state.messages)]}
 
 
 # add nodes
@@ -73,4 +73,4 @@ def chat(user_input: str, history):
     return result["messages"][-1].content
 
 
-gr.ChatInterface(chat, type="messages").launch()
+gr.ChatInterface(chat).launch()
