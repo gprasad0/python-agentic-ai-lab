@@ -1,5 +1,5 @@
 from dotenv import load_dotenv
-from litellm import Annotated
+from typing import Annotated
 from pydantic import BaseModel
 from langchain_community.utilities import GoogleSerperAPIWrapper
 from langgraph.prebuilt import ToolNode, tools_condition
