@@ -10,12 +10,16 @@ import gradio as gr
 import os
 import requests
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langgraph.checkpoint.sqlite import SqliteSaver
+import sqlite3
 
 load_dotenv(override=True)
 os.environ["GOOGLE_API_KEY"] = os.getenv("GOOGLE_GEMINI_API_KEY")
 os.getenv("SERPER_API_KEY")
 
 search = GoogleSerperAPIWrapper()
+conn = sqlite3.connect("checkpoints.sqlite", check_same_thread=False)
+checkpoint_store = SqliteSaver(conn)
 
 
 # create tools
@@ -66,11 +70,14 @@ graph_builder.add_conditional_edges("first_node", tools_condition)
 graph_builder.add_edge("tools", "first_node")
 
 # compile the graph
-graph = graph_builder.compile()
+graph = graph_builder.compile(checkpointer=checkpoint_store)
+config = {"configurable": {"thread_id": 1}}
 
 
 def chat(user_input: str, history):
-    result = graph.invoke({"messages": [{"role": "user", "content": user_input}]})
+    result = graph.invoke(
+        {"messages": [{"role": "user", "content": user_input}]}, config=config
+    )
     return result["messages"][-1].content
 
 
