@@ -368,3 +368,114 @@ Setup → yield → block executes → cleanup
 ---
 
 # End
+
+# FastAPI Application Lifespan
+
+## Overview
+
+This application uses FastAPI's `lifespan` mechanism to perform startup and shutdown tasks.
+
+The lifespan function is executed automatically when the application starts and stops.
+
+```python
+from contextlib import asynccontextmanager
+from fastapi import FastAPI
+
+from database import create_tables
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Initializing database...")
+    create_tables()
+
+    yield
+
+    print("Shutting down...")
+
+
+app = FastAPI(lifespan=lifespan)
+```
+
+## Startup Flow
+
+When the application starts:
+
+1. FastAPI invokes the `lifespan()` function.
+2. Database tables are created if they do not already exist.
+3. Execution pauses at `yield`.
+4. FastAPI begins serving API requests.
+
+```text
+Application Start
+       ↓
+create_tables()
+       ↓
+yield
+       ↓
+API Ready
+```
+
+## Shutdown Flow
+
+When the application stops:
+
+1. FastAPI exits the request-serving phase.
+2. Execution resumes after `yield`.
+3. Cleanup tasks are executed.
+
+```text
+API Running
+      ↓
+Server Stop
+      ↓
+Code After Yield
+      ↓
+Cleanup Complete
+```
+
+## Why Use Lifespan?
+
+Using a lifespan function centralizes startup and shutdown logic in a single location.
+
+Common startup tasks:
+
+- Creating database tables
+- Initializing Redis connections
+- Loading machine learning models
+- Creating connection pools
+- Loading configuration
+
+Common shutdown tasks:
+
+- Closing database connections
+- Closing Redis connections
+- Releasing resources
+- Flushing logs
+
+## Running the Application
+
+```bash
+uvicorn main:app --reload
+```
+
+Expected startup output:
+
+```text
+Initializing database...
+INFO: Application startup complete.
+```
+
+Expected shutdown output:
+
+```text
+Shutting down...
+INFO: Application shutdown complete.
+```
+
+## Notes
+
+- `create_tables()` runs every startup.
+- Using `CREATE TABLE IF NOT EXISTS` makes repeated executions safe.
+- The application will not begin serving requests until startup tasks complete successfully.
+- Cleanup code after `yield` always runs during application shutdown.
