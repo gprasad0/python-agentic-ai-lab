@@ -514,3 +514,220 @@ Use Annotated for: - Validation - Framework integrations
 - Annotations define types
 - Annotated adds metadata
 - Neither enforces behavior by default
+
+# Understanding `TypeVar("T", bound=BaseModel)`
+
+When building reusable functions or classes in Python, you often want to preserve the specific type that is passed into a function. This is where `TypeVar` comes in.
+
+```python
+from typing import TypeVar
+from pydantic import BaseModel
+
+T = TypeVar("T", bound=BaseModel)
+```
+
+## What is `TypeVar`?
+
+A `TypeVar` is a placeholder for a type.
+
+Instead of representing a value, it represents a Python type.
+
+For example:
+
+```python
+from typing import TypeVar
+
+T = TypeVar("T")
+```
+
+`T` could represent:
+
+- `int`
+- `str`
+- `list`
+- `ProposalRequest`
+- `ProposalResponse`
+
+depending on how the function is called.
+
+---
+
+## What does `bound=BaseModel` mean?
+
+The `bound` parameter restricts which types `T` can represent.
+
+```python
+T = TypeVar("T", bound=BaseModel)
+```
+
+This means `T` **must be a subclass of `BaseModel`**.
+
+Valid examples:
+
+```python
+from pydantic import BaseModel
+
+
+class ProposalRequest(BaseModel):
+    title: str
+
+
+class ProposalResponse(BaseModel):
+    proposal: str
+```
+
+Invalid examples:
+
+```python
+T = int
+T = str
+T = dict
+```
+
+These are not subclasses of `BaseModel`.
+
+---
+
+## Why is this useful?
+
+Suppose you write a generic function that validates data into a Pydantic model.
+
+```python
+from typing import Type
+
+def parse(data: dict, model: Type[T]) -> T:
+    return model.model_validate(data)
+```
+
+Now define a model:
+
+```python
+from pydantic import BaseModel
+
+
+class User(BaseModel):
+    name: str
+```
+
+Use the function:
+
+```python
+user = parse(
+    {"name": "Guru"},
+    User,
+)
+```
+
+The return type is automatically inferred as:
+
+```python
+User
+```
+
+instead of:
+
+```python
+BaseModel
+```
+
+This gives you proper type checking and IDE autocompletion.
+
+---
+
+## Why not return `BaseModel`?
+
+Without `TypeVar`:
+
+```python
+def parse(data, model: type[BaseModel]) -> BaseModel:
+    return model.model_validate(data)
+```
+
+The returned object is typed as `BaseModel`.
+
+Your IDE only knows:
+
+```python
+user: BaseModel
+```
+
+It cannot infer fields like:
+
+```python
+user.name
+```
+
+With `TypeVar`, the type information is preserved.
+
+---
+
+## Example with an LLM Client
+
+A common use case is returning structured outputs from an LLM.
+
+```python
+from typing import Type
+
+async def generate(
+    prompt: str,
+    response_model: Type[T],
+) -> T:
+    ...
+```
+
+Create a response model:
+
+```python
+class ProposalResponse(BaseModel):
+    executive_summary: str
+    scope: str
+    timeline: str
+```
+
+Call the function:
+
+```python
+proposal = await generate(
+    prompt,
+    ProposalResponse,
+)
+```
+
+The variable `proposal` is automatically typed as:
+
+```python
+ProposalResponse
+```
+
+This means your IDE understands:
+
+```python
+proposal.executive_summary
+proposal.scope
+proposal.timeline
+```
+
+without any type casting.
+
+---
+
+## Benefits
+
+- Preserves the concrete model type.
+- Improves IDE autocompletion.
+- Enables static type checking.
+- Makes generic utility functions reusable.
+- Commonly used in FastAPI, Pydantic, and AI/LLM applications.
+
+---
+
+## Summary
+
+```python
+T = TypeVar("T", bound=BaseModel)
+```
+
+- `T` is a generic type variable.
+- `bound=BaseModel` restricts `T` to Pydantic models.
+- Functions can accept **any** Pydantic model while preserving the exact return type.
+- This pattern is widely used for generic parsers, validators, repositories, and LLM wrappers that return structured outputs.
